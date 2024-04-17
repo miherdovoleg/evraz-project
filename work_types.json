@@ -1,0 +1,41 @@
+[
+  {
+    "type": "Асфальтирование",
+    "conditions": {
+      "min_temp": "",
+      "max_temp": "",
+      "rainfall": false,
+      "snow": true
+    }
+  },
+  {
+    "type": "Оа",
+    "rainfall": true,
+    "snow": true,
+    "conditions": {
+      "min_temp": "-20",
+      "max_temp": "+30",
+      "rainfall": true
+    }
+  },
+  {
+    "type": "Оады",
+    "rainfall": false,
+    "snow": false,
+    "conditions": {
+      "min_temp": "-10",
+      "max_temp": "+10",
+      "rainfall": false
+    }
+  },
+  {
+    "type": "Эфээф",
+    "rainfall": true,
+    "snow": false,
+    "conditions": {
+      "min_temp": "Лсл",
+      "max_temp": "Да",
+      "rainfall": true
+    }
+  }
+]
