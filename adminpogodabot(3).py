@@ -13,6 +13,8 @@ work_types = []
 
 conditions = {}
 
+is_edit = False
+
 
 def add_employee_fio(message):
     global employee
@@ -81,16 +83,16 @@ def add_work_conditions_max_temp(message):
 
 
 def add_work_conditions_rainfall(message):
-    global conditions
-    conditions['rainfall'] = button11.callback_data
+    global conditions, keyboard1
+    conditions['rainfall'] = keyboard1.callback_data
     bot.send_message(message.from_user.id, text='Уточните, возможно ли проведение работ в снегопад (Да/Нет)',
                      reply_markup=keyboard2)
     bot.register_next_step_handler(message, add_work_conditions_snow)
 
 
 def add_work_conditions_snow(message):
-    global conditions
-    conditions['snow'] = button22.callback_data
+    global conditions, keyboard2
+    conditions['snow'] = keyboard2.callback_data
     bot.send_message(message.from_user.id, text='Данные сохранены')
 
 def edit_work_type(message):
@@ -115,16 +117,16 @@ def edit_work_type(message):
             text += 'Возможно проводить в снегопад: Да' + '\n'
         else:
             text += 'Возможно проводить в снегопад: Нет' + '\n'
-    keyboard2 = types.InlineKeyboardMarkup()
+    keyboard4 = types.InlineKeyboardMarkup()
     buttonfile = types.InlineKeyboardButton(text='Сохранить', callback_data='save_file')
     buttonfile1 = types.InlineKeyboardButton(text='Редактировать', callback_data='edit_file')
-    keyboard2.add(buttonfile, buttonfile1)
-    bot.send_message(message.from_user.id, text=text, reply_markup=keyboard2)
+    keyboard4.add(buttonfile, buttonfile1)
+    bot.send_message(message.from_user.id, text=text, reply_markup=keyboard4)
     file.close()
 
 
 def edit_min_temp(message):
-    global conditions, keyboard2
+    global conditions, keyboard4
     conditions['min_temp'] = message.text
     file = open('work_types.json', 'r', encoding='utf-8')
     text = 'Проверьте введенные данные:\n\n\n'
@@ -144,15 +146,15 @@ def edit_min_temp(message):
             text += 'Возможно проводить в снегопад: Да' + '\n'
         else:
             text += 'Возможно проводить в снегопад: Нет' + '\n'
-    keyboard2 = types.InlineKeyboardMarkup()
+    keyboard4 = types.InlineKeyboardMarkup()
     buttonfile = types.InlineKeyboardButton(text='Сохранить', callback_data='save_file')
     buttonfile1 = types.InlineKeyboardButton(text='Редактировать', callback_data='edit_file')
-    keyboard2.add(buttonfile, buttonfile1)
-    bot.send_message(message.from_user.id, text=text, reply_markup=keyboard2)
+    keyboard4.add(buttonfile, buttonfile1)
+    bot.send_message(message.from_user.id, text=text, reply_markup=keyboard4)
     file.close()
 
 def edit_max_temp(message):
-    global conditions, keyboard2
+    global conditions, keyboard4
     conditions['max_temp'] = message.text
     file = open('work_types.json', 'r', encoding='utf-8')
     text = 'Проверьте введенные данные:\n\n\n'
@@ -172,16 +174,16 @@ def edit_max_temp(message):
             text += 'Возможно проводить в снегопад: Да' + '\n'
         else:
             text += 'Возможно проводить в снегопад: Нет' + '\n'
-    keyboard2 = types.InlineKeyboardMarkup()
+    keyboard4 = types.InlineKeyboardMarkup()
     buttonfile = types.InlineKeyboardButton(text='Сохранить', callback_data='save_file')
     buttonfile1 = types.InlineKeyboardButton(text='Редактировать', callback_data='edit_file')
-    keyboard2.add(buttonfile, buttonfile1)
-    bot.send_message(message.from_user.id, text=text, reply_markup=keyboard2)
+    keyboard4.add(buttonfile, buttonfile1)
+    bot.send_message(message.from_user.id, text=text, reply_markup=keyboard4)
     file.close()
 
 def edit_rainfall(message):
-    global conditions, keyboard2
-    conditions['rainfall'] = button11.callback_data
+    global conditions, keyboard4, keyboard1
+    conditions['rainfall'] = keyboard1.callback_data
     file = open('work_types.json', 'r', encoding='utf-8')
     text = 'Проверьте введенные данные:\n\n\n'
     if 'type' in work_type:
@@ -200,16 +202,16 @@ def edit_rainfall(message):
             text += 'Возможно проводить в снегопад: Да' + '\n'
         else:
             text += 'Возможно проводить в снегопад: Нет' + '\n'
-    keyboard2 = types.InlineKeyboardMarkup()
+    keyboard4 = types.InlineKeyboardMarkup()
     buttonfile = types.InlineKeyboardButton(text='Сохранить', callback_data='save_file')
     buttonfile1 = types.InlineKeyboardButton(text='Редактировать', callback_data='edit_file')
-    keyboard2.add(buttonfile, buttonfile1)
-    bot.send_message(message.from_user.id, text=text, reply_markup=keyboard2)
+    keyboard4.add(buttonfile, buttonfile1)
+    bot.send_message(message.from_user.id, text=text, reply_markup=keyboard4)
     file.close()
 
 def edit_snow(message):
-    global conditions, keyboard2
-    conditions['snow'] = button22.callback_data
+    global conditions, keyboard4
+    conditions['snow'] = keyboard2.callback_data
     file = open('work_types.json', 'r', encoding='utf-8')
     text = 'Проверьте введенные данные:\n\n\n'
     if 'type' in work_type:
@@ -228,11 +230,11 @@ def edit_snow(message):
             text += 'Возможно проводить в снегопад: Да' + '\n'
         else:
             text += 'Возможно проводить в снегопад: Нет' + '\n'
-    keyboard2 = types.InlineKeyboardMarkup()
+    keyboard4 = types.InlineKeyboardMarkup()
     buttonfile = types.InlineKeyboardButton(text='Сохранить', callback_data='save_file')
     buttonfile1 = types.InlineKeyboardButton(text='Редактировать', callback_data='edit_file')
-    keyboard2.add(buttonfile, buttonfile1)
-    bot.send_message(message.from_user.id, text=text, reply_markup=keyboard2)
+    keyboard4.add(buttonfile, buttonfile1)
+    bot.send_message(message.from_user.id, text=text, reply_markup=keyboard4)
     file.close()
 
 
@@ -283,7 +285,7 @@ def get_text_messages(message):
 @bot.callback_query_handler(func=lambda call: True)
 # Функция обработки нажатия на кнопку
 def callback_worker(call):
-    global work_type, keyboard1, keyboard2
+    global work_type, keyboard1, keyboard2, keyboard3, is_edit
 
     if call.data == 'Вид проводимых работ':
         bot.send_message(call.message.chat.id, text='Добавьте вид проводимых работ')
@@ -299,31 +301,34 @@ def callback_worker(call):
         work_type['rainfall'] = True
         conditions['rainfall'] = True
 
-        keyboard1 = types.InlineKeyboardMarkup()
+        keyboard2 = types.InlineKeyboardMarkup()
         button11 = types.InlineKeyboardButton(text='Да', callback_data='snow_true')
         button22 = types.InlineKeyboardButton(text='Нет', callback_data='snow_false')
-        keyboard1.add(button11, button22)
-        bot.send_message(call.message.chat.id, text='Уточните, возможно ли проведение работ в снег (Да/Нет)', reply_markup=keyboard1)
+        keyboard2.add(button11, button22)
+        if not is_edit:
+            bot.send_message(call.message.chat.id, text='Уточните, возможно ли проведение работ в снег (Да/Нет)', reply_markup=keyboard2)
+
 
     elif call.data == 'rainfall_false':
         work_type['rainfall'] = False
         conditions['rainfall'] = False
 
-        keyboard1 = types.InlineKeyboardMarkup()
+        keyboard2 = types.InlineKeyboardMarkup()
         button11 = types.InlineKeyboardButton(text='Да', callback_data='snow_true')
         button22 = types.InlineKeyboardButton(text='Нет', callback_data='snow_false')
-        keyboard1.add(button11, button22)
-        bot.send_message(call.message.chat.id, text='Уточните, возможно ли проведение работ в снег (Да/Нет)', reply_markup=keyboard1)
+        keyboard2.add(button11, button22)
+        if not is_edit:
+            bot.send_message(call.message.chat.id, text='Уточните, возможно ли проведение работ в снег (Да/Нет)', reply_markup=keyboard2)
 
     elif call.data == 'snow_true' or call.data == 'snow_false':
         if call.data == 'snow_true':
-            work_type['snow'] = True
+            conditions['snow'] = True
         else:
-            work_type['snow'] = False
+            conditions['snow'] = False
         file = open('work_types.json', 'r', encoding='utf-8')
         text = 'Проверьте введенные данные:\n\n\n'
         if 'type' in work_type:
-            text += 'Вид проводимых работ: ' + work_type['type'] + '\n\n\n'
+            text += 'Вид проводимых работ: ' + work_type['type'] + '\n\n'
         if 'min_temp' in conditions:
             text += 'Мин. допустимая температура: ' + conditions['min_temp'] + '\n\n'
         if 'max_temp' in conditions:
@@ -338,11 +343,11 @@ def callback_worker(call):
                 text += 'Возможно проводить в снегопад: Да' + '\n'
             else:
                 text += 'Возможно проводить в снегопад: Нет' + '\n'
-        keyboard2 = types.InlineKeyboardMarkup()
+        keyboard4 = types.InlineKeyboardMarkup()
         buttonfile = types.InlineKeyboardButton(text='Сохранить', callback_data='save_file')
         buttonfile1 = types.InlineKeyboardButton(text='Редактировать', callback_data='edit_file')
-        keyboard2.add(buttonfile, buttonfile1)
-        bot.send_message(call.message.chat.id, text=text, reply_markup=keyboard2)
+        keyboard4.add(buttonfile, buttonfile1)
+        bot.send_message(call.message.chat.id, text=text, reply_markup=keyboard4)
         file.close()
     if call.data == 'save_file':
         filesave = open('work_types.json', 'r', encoding='utf-8')
@@ -360,6 +365,7 @@ def callback_worker(call):
         bot.send_message(call.message.chat.id, text='Вид проводимых работ успешно сохранен')
 
     if call.data == 'edit_file':
+        is_edit = True
         keyboard3 = types.InlineKeyboardMarkup()
         button_edit_work_type = types.InlineKeyboardButton(text='Вид работ', callback_data='edit_file_work_type')
         button_edit_min_temp = types.InlineKeyboardButton(text='Мин. температура', callback_data='edit_file_min_temp')
