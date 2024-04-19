@@ -285,7 +285,7 @@ def get_text_messages(message):
 @bot.callback_query_handler(func=lambda call: True)
 # Функция обработки нажатия на кнопку
 def callback_worker(call):
-    global work_type, keyboard1, keyboard2, keyboard3, is_edit
+    global work_type, keyboard1, keyboard2, keyboard3, is_edit, keyboard
 
     if call.data == 'Вид проводимых работ':
         bot.send_message(call.message.chat.id, text='Добавьте вид проводимых работ')
@@ -298,7 +298,6 @@ def callback_worker(call):
         bot.register_next_step_handler(call.message, add_employee_fio)
 
     elif call.data == 'rainfall_true':
-        work_type['rainfall'] = True
         conditions['rainfall'] = True
 
         keyboard2 = types.InlineKeyboardMarkup()
@@ -307,10 +306,34 @@ def callback_worker(call):
         keyboard2.add(button11, button22)
         if not is_edit:
             bot.send_message(call.message.chat.id, text='Уточните, возможно ли проведение работ в снег (Да/Нет)', reply_markup=keyboard2)
+        else:
+            file = open('work_types.json', 'r', encoding='utf-8')
+            text = 'Проверьте введенные данные:\n\n\n'
+            if 'type' in work_type:
+                text += 'Вид проводимых работ: ' + work_type['type'] + '\n\n'
+            if 'min_temp' in conditions:
+                text += 'Мин. допустимая температура: ' + conditions['min_temp'] + '\n\n'
+            if 'max_temp' in conditions:
+                text += 'Макс. допустимая температура: ' + conditions['max_temp'] + '\n\n'
+            if 'rainfall' in conditions:
+                if conditions['rainfall'] == True:
+                    text += 'Возможно проводить в дождь: Да' + '\n\n'
+                else:
+                    text += 'Возможно проводить в дождь: Нет' + '\n\n'
+            if 'snow' in conditions:
+                if conditions['snow'] == True:
+                    text += 'Возможно проводить в снегопад: Да' + '\n'
+                else:
+                    text += 'Возможно проводить в снегопад: Нет' + '\n'
+            keyboard4 = types.InlineKeyboardMarkup()
+            buttonfile = types.InlineKeyboardButton(text='Сохранить', callback_data='save_file')
+            buttonfile1 = types.InlineKeyboardButton(text='Редактировать', callback_data='edit_file')
+            keyboard4.add(buttonfile, buttonfile1)
+            bot.send_message(call.message.chat.id, text=text, reply_markup=keyboard4)
+            file.close()
 
 
     elif call.data == 'rainfall_false':
-        work_type['rainfall'] = False
         conditions['rainfall'] = False
 
         keyboard2 = types.InlineKeyboardMarkup()
@@ -364,6 +387,16 @@ def callback_worker(call):
         filesave1.close()
         bot.send_message(call.message.chat.id, text='Вид проводимых работ успешно сохранен')
 
+        keyboard = types.InlineKeyboardMarkup()
+        button1 = types.InlineKeyboardButton(text='Вид проводимых работ', callback_data='Вид проводимых работ')
+        button2 = types.InlineKeyboardButton(text='Ответсвенного сотрудника',
+                                             callback_data='Ответсвенного сотрудника')
+        button3 = types.InlineKeyboardButton(text='График проведения работ',
+                                             callback_data='График проведения работ')
+
+        keyboard.add(button1, button2, button3)
+        bot.send_message(call.message.chat.id, text="Выберите, что хотите добавить/редактировать", reply_markup=keyboard)
+
     if call.data == 'edit_file':
         is_edit = True
         keyboard3 = types.InlineKeyboardMarkup()
@@ -397,7 +430,16 @@ def callback_worker(call):
         bot.register_next_step_handler(call.message, edit_snow)
 
 
-# открыть json файл, из него взять инфу о условиях, спросить, все ли верно, дать возможность исправить
+    elif call.data == 'График проведения работ':
+        text = 'Выберите вид работ для изменения графика проведения (в сообщении отправьте только номер)\n\n\n'
+        file1 = open('work_types.json', 'r', encoding='utf-8')
+        file2 = open('employees.json', 'r', encoding='utf-8')
+        worktypes = json.load(file1)
+        for i in range(len(worktypes)):
+            text += str(i + 1) + '. ' + worktypes[i]['type'] + '\n\n'
+        bot.send_message(call.message.chat.id, text=text)
+        file1.close()
+        file2.close()
 
 
 bot.polling(none_stop=True, interval=0)
