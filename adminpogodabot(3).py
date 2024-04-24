@@ -13,6 +13,9 @@ work_types = []
 
 conditions = {}
 
+date = {}
+grafik = []
+
 is_edit = False
 
 
@@ -237,6 +240,55 @@ def edit_snow(message):
     bot.send_message(message.from_user.id, text=text, reply_markup=keyboard4)
     file.close()
 
+def add_date_start(message):
+    global date
+    file = open('work_types.json', 'r', encoding='utf-8')
+    work_types = json.load(file)
+    index = int(message.text) - 1
+    work_type = work_types[index]['type']
+    date['work_type'] = work_type
+    bot.send_message(message.from_user.id, text='Укажите дату начала проведения работ в формате дд.мм.гггг')
+    bot.register_next_step_handler(message, add_date_end)
+    file.close()
+
+def add_date_end(message):
+    global date
+    date['date_start'] = message.text
+    bot.send_message(message.from_user.id, text='Укажите дату окончания проведения работ в формате дд.мм.гггг')
+    bot.register_next_step_handler(message, all_employees)
+
+def all_employees(message):
+    global employees, employee
+    text = 'Выберите ответственного сотрудника (в сообщении отправьте только номер)\n\n\n'
+
+    file1 = open('employees.json', 'r', encoding='utf-8')
+    employees = json.load(file1)
+    for i in range(len(employees)):
+        text += str(i + 1) + '. ' + employees[i]['fio'] + '\n\n'
+    bot.send_message(message.from_user.id, text=text)
+    bot.register_next_step_handler(message, head_employee)
+    file1.close()
+
+def head_employee(message):
+    file = open('employees.json', 'r', encoding='utf-8')
+    employees = json.load(file)
+    index = int(message.text) - 1
+    employee = employees[index]['fio']
+    date['head_employee'] = employee
+    file.close()
+    print(date)
+
+     # добавить список сотрудников для выбора ответственного
+
+    #
+    # text = 'Выберите ответственного сотрудника (в сообщении отправьте только номер)\n\n\n'
+    # file1 = open('employees.json', 'r', encoding='utf-8')
+    # employees = json.load(file1)
+    # for i in range(len(employees)):
+    #     text += str(i + 1) + '. ' + employees[i]['fio'] + '\n\n'
+    # bot.send_message(message.from_user.id, text=text)
+    # file1.close()
+
 
 @bot.message_handler(content_types=['text'])
 def get_text_messages(message):
@@ -376,7 +428,7 @@ def callback_worker(call):
         filesave = open('work_types.json', 'r', encoding='utf-8')
         worktypes = json.load(filesave)
         filesave.close()
-        filesave1 = open('work_types.json', 'w', encoding='utf-8')
+        filesave1 = open('work_types.json', ' ', encoding='utf-8')
         worktypes.append({
             **work_type,
             "conditions": {
@@ -438,8 +490,11 @@ def callback_worker(call):
         for i in range(len(worktypes)):
             text += str(i + 1) + '. ' + worktypes[i]['type'] + '\n\n'
         bot.send_message(call.message.chat.id, text=text)
+        bot.register_next_step_handler(call.message, add_date_start)
         file1.close()
         file2.close()
+
+
 
 
 bot.polling(none_stop=True, interval=0)
