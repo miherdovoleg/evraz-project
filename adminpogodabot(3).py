@@ -245,11 +245,15 @@ def add_date_start(message):
     file = open('work_types.json', 'r', encoding='utf-8')
     work_types = json.load(file)
     index = int(message.text) - 1
+    # work_types[index]['type'] in work_types
     work_type = work_types[index]['type']
     date['work_type'] = work_type
     bot.send_message(message.from_user.id, text='Укажите дату начала проведения работ в формате дд.мм.гггг')
     bot.register_next_step_handler(message, add_date_end)
     file.close()
+    # else:
+    #     bot.send_message(message.from_user.id, text='Данного вида работ нет в списке')
+    #     bot.register_next_step_handler(message, add_date_start)
 
 def add_date_end(message):
     global date
@@ -259,8 +263,8 @@ def add_date_end(message):
 
 def all_employees(message):
     global employees, employee
+    date['date_end'] = message.text
     text = 'Выберите ответственного сотрудника (в сообщении отправьте только номер)\n\n\n'
-
     file1 = open('employees.json', 'r', encoding='utf-8')
     employees = json.load(file1)
     for i in range(len(employees)):
@@ -276,9 +280,9 @@ def head_employee(message):
     employee = employees[index]['fio']
     date['head_employee'] = employee
     file.close()
-    print(date)
+    bot.register_next_step_handler(message, edit_grafik)
 
-     # добавить список сотрудников для выбора ответственного
+    # добавить список сотрудников для выбора ответственного
 
     #
     # text = 'Выберите ответственного сотрудника (в сообщении отправьте только номер)\n\n\n'
@@ -288,6 +292,35 @@ def head_employee(message):
     #     text += str(i + 1) + '. ' + employees[i]['fio'] + '\n\n'
     # bot.send_message(message.from_user.id, text=text)
     # file1.close()
+
+
+# def grafik_work_type(message):
+#     text = 'Выберите вид работ для изменения графика проведения (в сообщении отправьте только номер)\n\n\n'
+#     file1 = open('work_types.json', 'r', encoding='utf-8')
+#     file2 = open('employees.json', 'r', encoding='utf-8')
+#     worktypes = json.load(file1)
+#     for i in range(len(worktypes)):
+#         text += str(i + 1) + '. ' + worktypes[i]['type'] + '\n\n'
+#     bot.send_message(message.chat.id, text=text)
+#     file1.close()
+#     file2.close()
+#     bot.register_next_step_handler(message, add_date_start)
+
+def edit_grafik(message):
+    text = 'Проверьте введенные данные:\n\n\n'
+    if 'work_type' in date:
+        text += 'Вид проводимых работ: ' + date['work_type'] + '\n\n\n'
+    if 'date_start' in date:
+        text += 'Дата начала проведения работ: ' + date['date_start'] + '\n\n'
+    if 'date_end' in date:
+        text += 'Дата окончания проведения работ: ' + date['date_end'] + '\n\n'
+    if 'head_employee' in date:
+        text += 'Ответственный сотрудник: ' + date['head_employee'] + '\n\n'
+    keyboard10 = types.InlineKeyboardMarkup()
+    buttonfile = types.InlineKeyboardButton(text='Сохранить', callback_data='save_file1')
+    buttonfile1 = types.InlineKeyboardButton(text='Редактировать', callback_data='edit_file1')
+    keyboard10.add(buttonfile, buttonfile1)
+    bot.send_message(message.from_user.id, text=text, reply_markup=keyboard10)
 
 
 @bot.message_handler(content_types=['text'])
@@ -424,6 +457,7 @@ def callback_worker(call):
         keyboard4.add(buttonfile, buttonfile1)
         bot.send_message(call.message.chat.id, text=text, reply_markup=keyboard4)
         file.close()
+
     if call.data == 'save_file':
         filesave = open('work_types.json', 'r', encoding='utf-8')
         worktypes = json.load(filesave)
@@ -494,7 +528,39 @@ def callback_worker(call):
         file1.close()
         file2.close()
 
+    if call.data == 'edit_file':
+        is_edit = True
+        keyboard11 = types.InlineKeyboardMarkup()
+        # edit_file_work_type1 = types.InlineKeyboardButton(text='Вид работ', callback_data='edit_file_work_type1')
+        edit_file_date_start = types.InlineKeyboardButton(text='Начало', callback_data='edit_file_date_start')
+        edit_file_date_end = types.InlineKeyboardButton(text='Конец', callback_data='edit_file_date_end')
+        # edit_file_head_employee = types.InlineKeyboardButton(text='Ответственный', callback_data='edit_file_head_employee')
 
+    if call.data == 'save_file1':
+        filesave = open('grafik.json', 'r', encoding='utf-8')
+        date = json.load(filesave)
+        filesave.close()
+        filesave1 = open('grafik.json', 'w', encoding='utf-8')
+        json.dump(date, filesave1, ensure_ascii=False)
+        filesave1.close()
+        bot.send_message(call.message.chat.id, text='Вид проводимых работ успешно сохранен')
+
+
+    # if call.data == 'edit_file_work_type1':
+    #     bot.send_message(call.message.chat.id, text='Введите название вида работ')
+    #     bot.register_next_step_handler(call.message, edit_work_type)
+
+    if call.data == 'edit_file_date_start':
+        bot.send_message(call.message.chat.id, text='Укажите дату начало проведения работ')
+        bot.register_next_step_handler(call.message, edit_min_temp)
+
+    if call.data == 'edit_file_date_end':
+        bot.send_message(call.message.chat.id, text='Укажите дату окончания проведения работ')
+        bot.register_next_step_handler(call.message, edit_max_temp)
+
+    # if call.data == 'edit_file_head_employee':
+    #     bot.send_message(call.message.chat.id, text='Укажите ответственного сотрудника',  reply_markup=keyboard1)
+    #     bot.register_next_step_handler(call.message, edit_rainfall)
 
 
 bot.polling(none_stop=True, interval=0)
