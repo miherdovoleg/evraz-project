@@ -42,12 +42,20 @@ def add_employee_link(message):
         employees = json.load(file)
     file.close()
 
-    employees.append(employee)
 
     file = open('employees.json', 'w', encoding='utf-8')
-    json.dump(employees, file, ensure_ascii=False)
+    json.dump(employee, file, ensure_ascii=False)
     file.close()
-
+    bot.send_message(message.from_user.id, text='Данные сохранены')
+    print(employees)
+    print(employee)
+    # message = {}
+    # message['content_type'] = 'text'
+    # message['from_user'] = {'id': 1130146790}
+    # get_text_messages(message)
+    # bot.register_next_step_handler(message, get_text_messages('/start'))
+    # bot.register_next_step_handler(message, bot_start_window)
+    bot_start_window(message)
 
 def add_work_type(message):
     global work_type, work_types
@@ -280,7 +288,7 @@ def head_employee(message):
     employee = employees[index]['fio']
     date['head_employee'] = employee
     file.close()
-    bot.register_next_step_handler(message, edit_grafik)
+    bot_start_window(message)
 
     # добавить список сотрудников для выбора ответственного
 
@@ -323,8 +331,24 @@ def edit_grafik(message):
     bot.send_message(message.from_user.id, text=text, reply_markup=keyboard10)
 
 
+def bot_start_window(message):
+    keyboard = types.InlineKeyboardMarkup()
+    button1 = types.InlineKeyboardButton(text='Вид проводимых работ', callback_data='Вид проводимых работ')
+    button2 = types.InlineKeyboardButton(text='Ответсвенного сотрудника',
+                                         callback_data='Ответсвенного сотрудника')
+    button3 = types.InlineKeyboardButton(text='График проведения работ',
+                                         callback_data='График проведения работ')
+
+    keyboard.add(button1, button2, button3)
+
+    bot.send_message(message.from_user.id, text="Выберите, что хотите добавить/редактировать",
+                     reply_markup=keyboard)
+
+
+
 @bot.message_handler(content_types=['text'])
 def get_text_messages(message):
+    print(message)
     global keyboard1, keyboard2
     # Проверка на доступ пользователя
     file = open('admins.json', 'r', encoding='utf-8')
@@ -462,7 +486,7 @@ def callback_worker(call):
         filesave = open('work_types.json', 'r', encoding='utf-8')
         worktypes = json.load(filesave)
         filesave.close()
-        filesave1 = open('work_types.json', ' ', encoding='utf-8')
+        filesave1 = open('work_types.json', 'w', encoding='utf-8')
         worktypes.append({
             **work_type,
             "conditions": {
